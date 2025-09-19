@@ -6,12 +6,18 @@ const fs = require('fs');
 const app = express();
 const UPLOAD_DIR = 'uploads';
 
-// Increase timeouts for large files
+// Increase timeouts and limits for large files
 app.use((req, res, next) => {
-  req.setTimeout(0); // No timeout
-  res.setTimeout(0); // No timeout
+  req.setTimeout(0);
+  res.setTimeout(0);
+  req.connection.setTimeout(0);
   next();
 });
+
+// Handle large payloads
+app.use(express.raw({ limit: '50gb' }));
+app.use(express.json({ limit: '50gb' }));
+app.use(express.urlencoded({ limit: '50gb', extended: true }));
 
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
@@ -302,7 +308,8 @@ app.delete('/api/delete/:path(*)', (req, res) => {
 
 const server = app.listen(3000, () => console.log('Server running on http://localhost:3000'));
 
-// Set server timeout to 0 (no timeout) for large uploads
+// Remove ALL timeouts
 server.timeout = 0;
 server.keepAliveTimeout = 0;
 server.headersTimeout = 0;
+server.requestTimeout = 0;
