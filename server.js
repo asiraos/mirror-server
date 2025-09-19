@@ -25,6 +25,20 @@ const upload = multer({
 
 app.use(express.static('public'));
 
+function getFileIcon(filename) {
+  const ext = filename.split('.').pop().toLowerCase();
+  const iconMap = {
+    'zip': 'archive', 'rar': 'archive', '7z': 'archive',
+    'pdf': 'file-text', 'doc': 'file-text', 'docx': 'file-text', 'txt': 'file-text',
+    'jpg': 'image', 'jpeg': 'image', 'png': 'image', 'gif': 'image', 'svg': 'image',
+    'mp4': 'video', 'avi': 'video', 'mkv': 'video', 'mov': 'video',
+    'mp3': 'music', 'wav': 'music', 'flac': 'music',
+    'js': 'code', 'html': 'code', 'css': 'code', 'py': 'code', 'java': 'code',
+    'exe': 'cpu', 'msi': 'cpu', 'deb': 'cpu', 'rpm': 'cpu'
+  };
+  return iconMap[ext] || 'file';
+}
+
 app.get('/', (req, res) => {
   const folder = req.query.folder || '';
   const currentPath = path.join(UPLOAD_DIR, folder);
@@ -50,7 +64,8 @@ app.get('/', (req, res) => {
         type: stats.isDirectory() ? 'folder' : 'file',
         path: relativePath,
         size: size,
-        modified: stats.mtime.toLocaleDateString()
+        modified: stats.mtime.toLocaleDateString(),
+        icon: stats.isDirectory() ? 'folder' : getFileIcon(item)
       };
     });
   }
@@ -195,7 +210,7 @@ app.get('/', (req, res) => {
         <div class="file-item">
           <div class="file-info">
             <div class="file-icon">
-              <i data-feather="${item.type === 'folder' ? 'folder' : getFileIcon(item.name)}" size="32"></i>
+              <i data-feather="${item.icon}" size="32"></i>
             </div>
             <div class="file-details">
               <h3>
@@ -226,20 +241,6 @@ app.get('/', (req, res) => {
   </div>
   
   <script>
-    function getFileIcon(filename) {
-      const ext = filename.split('.').pop().toLowerCase();
-      const iconMap = {
-        'zip': 'archive', 'rar': 'archive', '7z': 'archive',
-        'pdf': 'file-text', 'doc': 'file-text', 'docx': 'file-text', 'txt': 'file-text',
-        'jpg': 'image', 'jpeg': 'image', 'png': 'image', 'gif': 'image', 'svg': 'image',
-        'mp4': 'video', 'avi': 'video', 'mkv': 'video', 'mov': 'video',
-        'mp3': 'music', 'wav': 'music', 'flac': 'music',
-        'js': 'code', 'html': 'code', 'css': 'code', 'py': 'code', 'java': 'code',
-        'exe': 'cpu', 'msi': 'cpu', 'deb': 'cpu', 'rpm': 'cpu'
-      };
-      return iconMap[ext] || 'file';
-    }
-    
     feather.replace();
   </script>
 </body>
