@@ -6,6 +6,13 @@ const fs = require('fs');
 const app = express();
 const UPLOAD_DIR = 'uploads';
 
+// Increase timeouts for large files
+app.use((req, res, next) => {
+  req.setTimeout(0); // No timeout
+  res.setTimeout(0); // No timeout
+  next();
+});
+
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -273,4 +280,29 @@ app.get('/download/:path(*)', (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+app.delete('/api/delete/:path(*)', (req, res) => {
+  const filePath = path.join(UPLOAD_DIR, req.params.path);
+  
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ status: 'error', message: 'File not found' });
+  }
+  
+  try {
+    const stats = fs.statSync(filePath);
+    if (stats.isDirectory()) {
+      fs.rmSync(filePath, { recursive: true, force: true });
+    } else {
+      fs.unlinkSync(filePath);
+    }
+    res.json({ status: 'success', message: 'Deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: 'Failed to delete' });
+  }
+});
+
+const server = app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+
+// Set server timeout to 0 (no timeout) for large uploads
+server.timeout = 0;
+server.keepAliveTimeout = 0;
+server.headersTimeout = 0;

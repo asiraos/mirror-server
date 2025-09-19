@@ -20,6 +20,18 @@ http://localhost:3000/download/filename.zip
 http://localhost:3000/download/folder/filename.zip
 ```
 
+## Delete API
+
+Delete files or folders via DELETE request:
+
+```bash
+# Delete file
+curl -X DELETE http://localhost:3000/api/delete/filename.zip
+
+# Delete folder (recursive)
+curl -X DELETE http://localhost:3000/api/delete/myfolder/
+```
+
 ## Start Server
 
 ```bash

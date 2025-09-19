@@ -1,7 +1,7 @@
 #!/bin/bash
 
 API_KEY="your-api-key-here"
-SERVER_URL="http://localhost:3000"
+SERVER_URL="http://flame-production-flameosmirror-kwjazd-093119-161-118-191-145.traefik.me"
 
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <folder_path> <filename>"
@@ -25,5 +25,5 @@ else
 fi
 
 echo "Uploading $FILENAME to $FOLDER..."
-curl -X POST -F "file=@$FILENAME" -H "Authorization: Bearer $API_KEY" "$URL"
+curl --max-time 0 -X POST -F "file=@$FILENAME" -H "Authorization: Bearer $API_KEY" "$URL"
 echo ""
