@@ -1,3 +1,10 @@
+/*
+ * FlameOS - The Future of Linux
+ * Copyright (c) 2024 FlameOS Team
+ * https://flame-os.github.io
+ * Licensed under GPL-3.0
+ */
+
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -31,7 +38,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, file.originalname)
 });
 
-const upload = multer({ 
+const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 * 1024 } // 10GB
 });
@@ -55,14 +62,14 @@ function getFileIcon(filename) {
 app.get('/', (req, res) => {
   const folder = req.query.folder || '';
   const currentPath = path.join(UPLOAD_DIR, folder);
-  
+
   let files = [];
   if (fs.existsSync(currentPath)) {
     files = fs.readdirSync(currentPath).map(item => {
       const itemPath = path.join(currentPath, item);
       const relativePath = path.join(folder, item);
       const stats = fs.statSync(itemPath);
-      
+
       let size = '';
       if (stats.isFile()) {
         const bytes = stats.size;
@@ -71,7 +78,7 @@ app.get('/', (req, res) => {
         else if (bytes < 1024 * 1024 * 1024) size = (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         else size = (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
       }
-      
+
       return {
         name: item,
         type: stats.isDirectory() ? 'folder' : 'file',
@@ -84,12 +91,12 @@ app.get('/', (req, res) => {
   }
 
   const parentFolder = path.dirname(folder);
-  
+
   res.send(`
 <!DOCTYPE html>
 <html>
 <head>
-  <title>🔥 FlameOS Mirror</title>
+  <title>AsiraOS Mirror</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://unpkg.com/feather-icons"></script>
   <style>
@@ -214,7 +221,7 @@ app.get('/', (req, res) => {
 <body>
   <div class="container">
     <div class="header">
-      <h1><i data-feather="zap"></i> FlameOS Mirror</h1>
+      <h1><i data-feather="zap"></i> AsiraOS Mirror</h1>
       <div class="path"><i data-feather="folder"></i> /${folder || 'root'}</div>
     </div>
     
@@ -227,10 +234,10 @@ app.get('/', (req, res) => {
             </div>
             <div class="file-details">
               <h3>
-                ${item.type === 'folder' ? 
-                  `<a href="/?folder=${encodeURIComponent(item.path)}" class="folder-link">${item.name}</a>` :
-                  item.name
-                }
+                ${item.type === 'folder' ?
+      `<a href="/?folder=${encodeURIComponent(item.path)}" class="folder-link">${item.name}</a>` :
+      item.name
+    }
               </h3>
               <div class="file-meta">
                 ${item.size ? `<span><i data-feather="hard-drive" size="14"></i> ${item.size}</span>` : ''}
@@ -238,12 +245,12 @@ app.get('/', (req, res) => {
               </div>
             </div>
           </div>
-          ${item.type === 'file' ? 
-            `<a href="/download/${encodeURIComponent(item.path)}" class="download-btn">
+          ${item.type === 'file' ?
+      `<a href="/download/${encodeURIComponent(item.path)}" class="download-btn">
               <i data-feather="download" size="16"></i> Download
-            </a>` : 
-            ''
-          }
+            </a>` :
+      ''
+    }
         </div>
       `).join('')}
     </div>
@@ -288,11 +295,11 @@ app.get('/download/:path(*)', (req, res) => {
 
 app.delete('/api/delete/:path(*)', (req, res) => {
   const filePath = path.join(UPLOAD_DIR, req.params.path);
-  
+
   if (!fs.existsSync(filePath)) {
     return res.status(404).json({ status: 'error', message: 'File not found' });
   }
-  
+
   try {
     const stats = fs.statSync(filePath);
     if (stats.isDirectory()) {
