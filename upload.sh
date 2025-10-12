@@ -2,7 +2,7 @@
 
 
 API_KEY="your-api-key-here"
-SERVER_URL="http://161.118.191.145:6060"
+SERVER_URL="http://141.148.198.187:6060"
 
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <folder_path> <filename>"
